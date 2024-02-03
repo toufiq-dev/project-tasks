@@ -5,7 +5,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {taskkill /PID <PID> /F
+datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
