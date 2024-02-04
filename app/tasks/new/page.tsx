@@ -30,6 +30,17 @@ const NewTaskPage = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
 
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setSubmitting(true);
+      await axios.post("/api/tasks", data);
+      router.push("/tasks");
+    } catch {
+      setSubmitting(false);
+      setError("An unexpected error occurred.");
+    }
+  });
+
   return (
     <div className="max-w-xl ">
       {error && (
@@ -37,19 +48,7 @@ const NewTaskPage = () => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form
-        className="space-y-3"
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            setSubmitting(true);
-            await axios.post("/api/tasks", data);
-            router.push("/tasks");
-          } catch {
-            setSubmitting(false);
-            setError("An unexpected error occurred.");
-          }
-        })}
-      >
+      <form className="space-y-3" onSubmit={onSubmit}>
         <TextField.Root>
           <TextField.Input placeholder="Title" {...register("title")} />
         </TextField.Root>
@@ -60,7 +59,7 @@ const NewTaskPage = () => {
           render={({ field }) => (
             <SimpleMdeEditor placeholder="Description" {...field} />
           )}
-        />{" "}
+        />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
           Submit New Task {isSubmitting && <Spinner />}
