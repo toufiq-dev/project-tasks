@@ -1,5 +1,4 @@
 "use client";
-import ErrorMessage from "@/app/components/ErrorMessage";
 import Spinner from "@/app/components/Spinner";
 import { createTaskSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,10 +13,11 @@ import { z } from "zod";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
+import { ErrorMessage } from "@/app/components";
 
 type TaskForm = z.infer<typeof createTaskSchema>;
 
-const NewTaskPage = () => {
+const NewTaskPage = async () => {
   const router = useRouter();
   const {
     register,

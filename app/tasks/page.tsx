@@ -1,9 +1,8 @@
 import prisma from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
 import delay from "delay";
-import TaskStatusBadge from "../components/TaskStatusBadge";
 import TaskActions from "./TaskActions";
-import Link from "../components/Link";
+import { TaskStatusBadge, Link } from "@/app/components";
 
 const TasksPage = async () => {
   const tasks = await prisma.task.findMany();
