@@ -1,6 +1,6 @@
 "use client";
 import Spinner from "@/app/components/Spinner";
-import { createTaskSchema } from "@/app/validationSchemas";
+import { taskSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
@@ -16,7 +16,7 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
 import { ErrorMessage } from "@/app/components";
 import { Task } from "@prisma/client";
 
-type TaskFormData = z.infer<typeof createTaskSchema>;
+type TaskFormData = z.infer<typeof taskSchema>;
 
 const TaskForm = ({ task }: { task?: Task }) => {
   const router = useRouter();
@@ -26,7 +26,7 @@ const TaskForm = ({ task }: { task?: Task }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<TaskFormData>({
-    resolver: zodResolver(createTaskSchema),
+    resolver: zodResolver(taskSchema),
   });
   const [error, setError] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
@@ -34,7 +34,10 @@ const TaskForm = ({ task }: { task?: Task }) => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setSubmitting(true);
-      await axios.post("/api/tasks", data);
+
+      if (task) await axios.patch("/api/tasks/" + task.id, data);
+      else await axios.post("/api/tasks", data);
+
       router.push("/tasks");
     } catch {
       setSubmitting(false);
@@ -68,7 +71,8 @@ const TaskForm = ({ task }: { task?: Task }) => {
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
-          Submit New Task {isSubmitting && <Spinner />}
+          {task ? "Update Task" : "Submit New Task"}{" "}
+          {isSubmitting && <Spinner />}
         </Button>
       </form>
     </div>

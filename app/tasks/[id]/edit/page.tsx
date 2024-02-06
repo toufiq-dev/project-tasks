@@ -11,7 +11,7 @@ const EditTaskPage = async ({ params }: Props) => {
   const task = await prisma.task.findUnique({
     where: { id: parseInt(params.id) },
   });
-   
+
   if (!task) notFound();
 
   return <TaskForm task={task} />;
