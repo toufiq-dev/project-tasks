@@ -1,20 +1,17 @@
 "use client";
+import { ErrorMessage } from "@/app/components";
 import Spinner from "@/app/components/Spinner";
 import { taskSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Task } from "@prisma/client";
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import SimpleMDE from "react-simplemde-editor";
 import { z } from "zod";
-const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
-import { ErrorMessage } from "@/app/components";
-import { Task } from "@prisma/client";
 
 type TaskFormData = z.infer<typeof taskSchema>;
 
@@ -39,6 +36,7 @@ const TaskForm = ({ task }: { task?: Task }) => {
       else await axios.post("/api/tasks", data);
 
       router.push("/tasks");
+      router.refresh();
     } catch {
       setSubmitting(false);
       setError("An unexpected error occurred.");
@@ -66,7 +64,7 @@ const TaskForm = ({ task }: { task?: Task }) => {
           control={control}
           defaultValue={task?.description}
           render={({ field }) => (
-            <SimpleMdeEditor placeholder="Description" {...field} />
+            <SimpleMDE placeholder="Description" {...field} />
           )}
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>

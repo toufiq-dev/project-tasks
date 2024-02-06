@@ -1,14 +1,3 @@
-import { Box } from "@radix-ui/themes";
-import React from "react";
-import { Skeleton } from "@/app/components";
+import TaskFormSkeleton from "../_components/TaskFormSkeleton";
 
-const LoadingNewTaskPage = () => {
-  return (
-    <Box className="max-w-xl">
-      <Skeleton />
-      <Skeleton height="20rem" />
-    </Box>
-  );
-};
-
-export default LoadingNewTaskPage;
+export default TaskFormSkeleton;
