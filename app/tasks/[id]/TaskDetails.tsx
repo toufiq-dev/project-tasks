@@ -14,7 +14,6 @@ const TaskDetails = ({ task }: { task: Task }) => {
       <Card className="prose max-w-full" mt="4">
         <ReactMarkdown>{task.description}</ReactMarkdown>
       </Card>
-      ;
     </>
   );
 };

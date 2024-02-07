@@ -19,7 +19,7 @@ const EditTaskPage = async ({ params }: Props) => {
 
   if (!task) notFound();
 
-  return <TaskForm task={task} />;
+  return <TaskForm task={task} />
 };
 
 export default EditTaskPage;
