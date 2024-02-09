@@ -4,12 +4,17 @@ import { notFound } from "next/navigation";
 import EditTaskButton from "./EditTaskButton";
 import TaskDetails from "./TaskDetails";
 import DeleteTaskButton from "./DeleteTaskButton";
+import { getServerSession } from "next-auth";
+import authOptions from "@/app/auth/authOptions";
+import AssigneeSelect from "./AssigneeSelect";
 
 interface Props {
   params: { id: string };
 }
 
 const TaskDetailPage = async ({ params }: Props) => {
+  const session = await getServerSession(authOptions);
+
   const task = await prisma.task.findUnique({
     where: { id: parseInt(params.id) },
   });
@@ -22,12 +27,15 @@ const TaskDetailPage = async ({ params }: Props) => {
         <TaskDetails task={task} />
       </Box>
 
-      <Box>
-        <Flex direction="column" gap="4">
-          <EditTaskButton taskId={task.id} />
-          <DeleteTaskButton taskId={task.id} />
-        </Flex>
-      </Box>
+      {session && (
+        <Box>
+          <Flex direction="column" gap="4">
+            <AssigneeSelect />
+            <EditTaskButton taskId={task.id} />
+            <DeleteTaskButton taskId={task.id} />
+          </Flex>
+        </Box>
+      )}
     </Grid>
   );
 };
