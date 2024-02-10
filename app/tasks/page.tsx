@@ -1,42 +1,27 @@
-import { Link, TaskStatusBadge } from "@/app/components";
 import prisma from "@/prisma/client";
-import { Table } from "@radix-ui/themes";
+import { Flex, Table } from "@radix-ui/themes";
 import TaskActions from "./TaskActions";
 import { Status, Task } from "@prisma/client";
-import NextLink from "next/link";
-import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import Pagination from "../components/Pagination";
+import TaskTable, { columns } from "./_components/TaskTable";
 
 interface Props {
   searchParams: {
     status: Status;
     orderBy: keyof Task;
     orderDirection: "asc" | "desc";
+    page: string;
   };
 }
 
 const TasksPage = async ({ searchParams }: Props) => {
-  const columns: {
-    label: string;
-    value: keyof Task;
-    className?: string;
-  }[] = [
-    { label: "Task", value: "title" },
-    {
-      label: "Status",
-      value: "status",
-      className: "hidden md:table-cell",
-    },
-    {
-      label: "Created",
-      value: "createdAt",
-      className: "hidden md:table-cell",
-    },
-  ];
-
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
+
+  const page = parseInt(searchParams.page) || 1;
+  const pageSize = 7;
 
   const nextOrderDirection =
     searchParams.orderBy === undefined || searchParams.orderDirection === "asc"
@@ -50,64 +35,26 @@ const TasksPage = async ({ searchParams }: Props) => {
     orderBy: {
       [searchParams.orderBy || columns[0].value]: nextOrderDirection, // Handle initial sort and default column
     },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
   });
 
-  return (
-    <div>
-      <TaskActions />
-      <Table.Root variant="surface">
-        <Table.Header>
-          <Table.Row>
-            {columns.map((column) => (
-              <Table.ColumnHeaderCell
-                key={column.value}
-                className={column.className}
-              >
-                <NextLink
-                  href={{
-                    query: {
-                      ...searchParams,
-                      orderBy: column.value,
-                      orderDirection: nextOrderDirection, // Update direction on click
-                    },
-                  }}
-                >
-                  {column.label}
-                  {column.value === searchParams.orderBy && (
-                    <span className="inline">
-                      {searchParams.orderDirection === "asc" ? (
-                        <ArrowUpIcon />
-                      ) : (
-                        <ArrowDownIcon />
-                      )}
-                    </span>
-                  )}
-                </NextLink>
-              </Table.ColumnHeaderCell>
-            ))}
-          </Table.Row>
-        </Table.Header>
+  const taskCount = await prisma.task.count({ where: { status } });
 
-        <Table.Body>
-          {tasks.map((task) => (
-            <Table.Row key={task.id}>
-              <Table.Cell>
-                <Link href={`/tasks/${task.id}`}>{task.title}</Link>
-                <div className="block md:hidden">
-                  <TaskStatusBadge status={task.status} />
-                </div>
-              </Table.Cell>
-              <Table.Cell className="hidden md:table-cell">
-                <TaskStatusBadge status={task.status} />
-              </Table.Cell>
-              <Table.Cell className="hidden md:table-cell">
-                {task.createdAt.toDateString()}
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-    </div>
+  return (
+    <Flex direction="column" gap="6">
+      <TaskActions />
+
+      <TaskTable searchParams={searchParams} tasks={tasks} />
+
+      <Flex direction="column" align="center">
+        <Pagination
+          pageSize={pageSize}
+          currentPage={page}
+          itemCount={taskCount}
+        />
+      </Flex>
+    </Flex>
   );
 };
 
