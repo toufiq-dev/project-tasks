@@ -1,8 +1,9 @@
 import prisma from "@/prisma/client";
-import { Flex, Table } from "@radix-ui/themes";
-import TaskActions from "./TaskActions";
 import { Status, Task } from "@prisma/client";
+import { Flex } from "@radix-ui/themes";
+import { Metadata } from "next";
 import Pagination from "../components/Pagination";
+import TaskActions from "./TaskActions";
 import TaskTable, { columns } from "./_components/TaskTable";
 
 interface Props {
@@ -59,5 +60,10 @@ const TasksPage = async ({ searchParams }: Props) => {
 };
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Project Task Manager - Task list",
+  description: "View all project tasks and issues",
+};
 
 export default TasksPage;

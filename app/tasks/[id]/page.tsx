@@ -7,17 +7,20 @@ import DeleteTaskButton from "./DeleteTaskButton";
 import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
+import { cache } from "react";
 
 interface Props {
   params: { id: string };
 }
 
+const fetchUser = cache((taskId: number) =>
+  prisma.task.findUnique({ where: { id: taskId } })
+);
+
 const TaskDetailPage = async ({ params }: Props) => {
   const session = await getServerSession(authOptions);
 
-  const task = await prisma.task.findUnique({
-    where: { id: parseInt(params.id) },
-  });
+  const task = await fetchUser(parseInt(params.id));
 
   if (!task) notFound();
 
@@ -39,5 +42,14 @@ const TaskDetailPage = async ({ params }: Props) => {
     </Grid>
   );
 };
+
+export async function generateMetadata({ params }: Props) {
+  const task = await fetchUser(parseInt(params.id));
+
+  return {
+    title: task?.title,
+    description: "Details of task " + task?.id,
+  };
+}
 
 export default TaskDetailPage;
