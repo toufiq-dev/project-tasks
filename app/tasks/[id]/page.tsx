@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import AssigneeSelect from "./AssigneeSelect";
 import { cache } from "react";
+import StatusSelect from "./StatusSelect";
 
 interface Props {
   params: { id: string };
@@ -34,6 +35,7 @@ const TaskDetailPage = async ({ params }: Props) => {
         <Box>
           <Flex direction="column" gap="4">
             <AssigneeSelect task={task} />
+            <StatusSelect task={task} />
             <EditTaskButton taskId={task.id} />
             <DeleteTaskButton taskId={task.id} />
           </Flex>

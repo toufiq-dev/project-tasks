@@ -18,4 +18,5 @@ export const editTaskSchema = z.object({
     .max(255)
     .optional()
     .nullable(),
+  status: z.enum(["OPEN", "IN_PROGRESS", "CLOSED"]).optional(),
 });
